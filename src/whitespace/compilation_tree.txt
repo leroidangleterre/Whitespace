@@ -1,0 +1,32 @@
+1
+2
+3
+4 1 Push
+5 1 (void)
+6 1
+7 6 Dupl
+8 6 Inv
+9 6 Supp
+10 2 Arith
+11 10 basic
+12 11 add
+13 11 sub
+14 11 mult
+15 10
+16 15 div
+17 15 mod
+18 2
+19 18 store
+20 18 get
+21 3
+#22 21 setLabel
+#23 21 call
+#24 21 B (branch)
+#25 3
+#26 25 BZ (branch if zero)
+#27 25 BNeg (branch if neg)
+#28 25 RET
+#29 3
+#30 29
+#31 29
+#32 29 EndProg
