@@ -3,6 +3,8 @@ package whitespace;
 import java.util.ArrayList;
 import graphs.*;
 import java.awt.Color;
+import java.awt.Font;
+import static java.awt.Font.PLAIN;
 import java.awt.Graphics;
 
 /**
@@ -13,15 +15,6 @@ public class WhitespaceTree extends Tree {
 
     private String name;
 
-    // x-coordinate of the leftmost element of this tree.
-    private double leftmostX;
-//    private double rightmostX;
-
-    // Distance between two lines or columns (in space-coordinates, not pixels).
-    private double lineSeparation;
-    private double columnSeparation;
-
-    // The id is given by super.value;
     // The three branches available in the superclass provide access to the nodes
     // First branch: SPACE, second branch: TAB, third branch: LF
     public WhitespaceTree(int id, String newName) {
@@ -29,16 +22,12 @@ public class WhitespaceTree extends Tree {
         name = newName;
         branches = new ArrayList<>();
         value = id;
-        leftmostX = 0;
 
-        lineSeparation = 0;
-        columnSeparation = 0;
+        lineSpacing = 20;
     }
 
     @Override
     public String getStringValue() {
-
-//        return "t";
         if (name.equals("no_name")) {
             return value + "";
         } else {
@@ -71,89 +60,27 @@ public class WhitespaceTree extends Tree {
         branches.add(index, branch);
     }
 
+    @Override
     public void paint(Graphics g, int x0, int y0, double zoom) {
+        super.paint(g, x0, y0, zoom);
 
-        int descent = g.getFontMetrics().getDescent();
+        g.setFont(new Font("Monospaced", PLAIN, 10));
 
-        // The height of the current node.
-        int nodeHeight = g.getFontMetrics().getHeight()
-                - descent;
+        // Apparent coordinates of this node
+        int xApp0 = (int) (x0 + this.x * zoom);
+        int yApp0 = (int) (y0 + this.y * zoom);
 
-        g.setColor(Color.black);
-        String str = getStringValue();
+        // Draw the names of the branches
+        for (int i = 0; i < branches.size(); i++) {
+            Tree branch = branches.get(i);
+            // Apparent coordinates of the branch
+            int xApp1 = (int) (x0 + branch.getApparentX() * zoom);
+            int yApp1 = (int) (y0 + branch.getApparentY() * zoom);
 
-        // Draw a red dot at the origin of the node.
-        g.setColor(Color.red);
-        g.fillRect((int) (x0 + (this.x * zoom)) - 2,
-                (int) (y0 + (this.y * zoom)) - 2,
-                5, 5);
-
-        // Draw a rectangle around the number.
-        char[] chars = getStringValue().toCharArray();
-        int currentNodeWidth = g.getFontMetrics().charsWidth(chars, 0, chars.length); // The width of the current node.
-        g.setColor(Color.black);
-        g.drawRect((int) (x0 + this.x * zoom),
-                (int) (y0 + this.y * zoom + descent),
-                (int) (currentNodeWidth),
-                (int) (nodeHeight));
-
-        g.drawString(str, (int) (x0 + (this.x * zoom)),
-                (int) (y0 + (this.y * zoom) + nodeHeight));
-
-        int i = 0;
-        for (Tree branch : this.branches) {
-            // Paint the branch
-            branch.paint(g, x0, y0, zoom);
-            // Paint the link between the branch and the current node
-            g.setColor(Color.black);
-            int xStart = (int) (x0 + this.x * zoom);
-            int yStart = (int) (y0 + (this.y * zoom + descent));
-
-//            int xEnd = (int) (x0 + branch.getNodeWidth(g) * zoom);
-//            int yEnd = (int) (y0 + branch.getNodeWidth(g) * zoom //- nodeHeight / 2
-//                    + descent);
-//            g.drawLine(xStart, yStart, xEnd, yEnd);
-//
-//            String branchName = (i == 0 ? "S" : (i == 1 ? "T" : "LF"));
-//            g.drawString(branchName, (xStart / 5 + 4 * xEnd / 5), (yStart / 5 + 4 * yEnd / 5));
-            i++;
+            // Draw the text at the center of the link
+            String text = (i == 0 ? "SPACE" : (i == 1 ? "TAB" : "LF"));
+            g.setColor(Color.red);
+            g.drawString(text, (xApp0 + xApp1) / 2, (yApp0 + yApp1) / 2);
         }
-
-        int xMin = this.getMinX();
-        g.setColor(Color.red);
-        g.drawRect((int) (x0 + xMin * zoom), (int) (y0 + this.y * zoom), 10, 10);
-    }
-
-    private int getMinX() {
-        if (isLeaf()) {
-            return (int) this.x;
-        } else {
-            int min = Integer.MAX_VALUE;
-            for (Tree branch : branches) {
-                min = Math.min(min, ((WhitespaceTree) branch).getMinX());
-            }
-            return min;
-        }
-    }
-
-    @Override
-    public int getWidthInPixels(Graphics g) {
-        if (branches.isEmpty()) {
-            return getNodeWidth(g);
-        } else {
-            int width = 0;
-            // Sum of the branches width, plus (n-1) separators
-            for (Tree branch : branches) {
-                width += branch.getWidthInPixels(g);
-            }
-            width += (branches.size()) * columnSeparation;
-            return width;
-        }
-    }
-
-    @Override
-    protected int getNodeHeight(Graphics g) {
-        int height = g.getFontMetrics().getHeight();
-        return height;
     }
 }

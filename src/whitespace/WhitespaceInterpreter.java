@@ -45,11 +45,10 @@ public class WhitespaceInterpreter {
         // Draw the compilation tree;
         JFrame frame = new JFrame();
         GraphPanel panel = new GraphPanel(compilationTree);
-        panel.setScroll(61, 306);
-        panel.setZoomLevel(2.5);
+        panel.setScroll(881, 191);
+        panel.setZoomLevel(3.07);
         frame.setContentPane(panel);
-//        panel.setPreferredSize(new Dimension(800, 400));
-        frame.setPreferredSize(new Dimension(1900, 1000));
+        frame.setPreferredSize(new Dimension(1800, 800));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
